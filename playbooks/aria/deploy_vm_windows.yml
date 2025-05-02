@@ -1,0 +1,75 @@
+---
+- name: Request Deployment in vRealize Automation
+  hosts: all
+  gather_facts: no
+
+  vars:
+    catalog_item_id: ""
+    vmname: "winsrv01"
+    os_image: "Windows Server 2022" # Windows Server 2016, 2019 or 2022
+    hardware_config: "Small"        # Small, Medium or Large
+    address: "10.10.10.10"          # Replace with IPv4 addess
+    project_id: ""                  # Replace with your vRA project ID
+    deployment_id: ""
+
+  tasks:
+    - name: Auth Stuff
+      block:
+        - name: Authenticate with VMware Aria Automation API
+          ansible.builtin.uri:
+            url: "https://{{ vra_hostname }}/csp/gateway/am/api/login"
+            method: POST
+            headers:
+              Content-Type: "application/json"
+            body:
+              username: "{{ vra_username }}"
+              password: "{{ vra_userpass }}"
+            body_format: json
+            return_content: yes
+          register: auth_response
+
+        - name: Extract access token
+          set_fact:
+            access_token: "{{ auth_response.json.cspAuthToken  }}"
+
+    # - name: Catalog Stuff
+    #   block:
+    #     - name: Get catalog items
+    #       ansible.builtin.uri:
+    #         url: "https://{{ vra_hostname }}/catalog/api/items"
+    #         method: GET
+    #         headers:
+    #           Authorization: "Bearer {{ access_token }}"
+    #           Accept: "application/json"
+    #         return_content: yes
+    #       register: catalog_response
+
+    #     - name: Debug catalog items
+    #       ansible.builtin.debug:
+    #         msg: "{{ catalog_response.json }}"
+
+    - name: Catalog | Create Deployment
+      block:
+        - name: Create Deployment
+          ansible.builtin.uri:
+            url: "https://{{ vra_hostname }}/catalog/api/items/{{ catalog_item_id }}/request"
+            method: POST
+            headers:
+              Authorization: "Bearer {{ access_token }}"
+              Content-Type: "application/json"
+            body:
+              # deploymentName: "{{ vmname }}-{{ now(fmt='%Y-%m-%d_%H%M') }}"
+              # deploymentName: "this is a test"
+              projectId: "{{ project_id }}"
+              inputs:
+                vmname: "{{ vmname }}"
+                os-image: "{{ os_image }}"
+                hardware-config: "{{ hardware_config }}"
+                Address: "{{ address }}"
+            body_format: json
+            return_content: yes
+          register: deployment_response
+
+        - name: Debug deployment response
+          ansible.builtin.debug:
+            msg: "{{ deployment_response.json }}"

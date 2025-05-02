@@ -1,0 +1,41 @@
+---
+- name: Get VMs
+  hosts: all
+  gather_facts: False
+  
+  tasks:
+    # - name: Get vm info using vmware collection
+    #   vmware.vmware_rest.vcenter_vm_info:
+    #     vcenter_hostname: "{{ web_url }}"
+    #     vcenter_password: "{{ web_userpass }}"
+    #     vcenter_username: "{{ web_username }}"
+    #     vcenter_validate_certs: no
+    #     # filter_names:
+    #     # - "{{ vm_name }}"
+    #   delegate_to: localhost
+    #   register: search_results
+
+    - name: Get vm info using vmware collection
+      vmware.vmware_rest.vcenter_vm_guest_operations_info:
+        vcenter_hostname: "{{ web_url }}"
+        vcenter_password: "{{ web_userpass }}"
+        vcenter_username: "{{ web_username }}"
+        vcenter_validate_certs: no
+        # filter_names:
+        # - "{{ vm_name }}"
+      delegate_to: localhost
+      register: search_results
+
+    # - name: Get vm info using community collection
+    #   community.vmware.vmware_vm_info:
+    #     hostname: "{{ web_url }}"
+    #     password: "{{ web_userpass }}"
+    #     username: "{{ web_username }}"
+    #     # show_tag: true
+    #     validate_certs: no
+    #   delegate_to: localhost
+    #   register: search_results
+
+    - name: Print a search results
+      ansible.builtin.debug:
+        msg: "{{ search_results }}"

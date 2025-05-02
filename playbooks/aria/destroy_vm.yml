@@ -1,0 +1,49 @@
+---
+- name: Destroy Deployment in vRealize Automation
+  hosts: all
+  gather_facts: no
+
+  vars:
+    vmname: ""    # winsrv01
+
+  tasks:
+    - name: Auth Stuff
+      block:
+        - name: Authenticate with VMware Aria Automation API
+          ansible.builtin.uri:
+            url: "https://{{ vra_hostname }}/csp/gateway/am/api/login"
+            method: POST
+            headers:
+              Content-Type: "application/json"
+            body:
+              username: "{{ vra_username }}"
+              password: "{{ vra_userpass }}"
+            body_format: json
+            return_content: yes
+          register: auth_response
+
+        - name: Extract access token
+          set_fact:
+            access_token: "{{ auth_response.json.cspAuthToken  }}"
+
+    - name: Get Deployment Info
+      block:
+        - name: Get deployment details by VM name from VMware Aria
+          ansible.builtin.uri:
+            url: "https://{{ vra_hostname }}/deployment/api/deployments?search={{ vmname }}"
+            method: GET
+            headers:
+              Authorization: "Bearer {{ access_token }}"
+              Content-Type: "application/json"
+            return_content: yes
+          register: deployment_response
+
+        - name: Extract deploymentId
+          set_fact:
+            deploymentId: "{{ deployment_response.json.content[0].id }}"
+
+    - name: Delete Deployment
+      block:
+        - name: Print deploymentId
+          ansible.builtin.debug:
+            msg: "{{ deploymentId}}"

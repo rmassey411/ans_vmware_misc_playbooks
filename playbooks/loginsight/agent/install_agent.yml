@@ -1,0 +1,9 @@
+---
+- name: Bootstrap for VMWare Log Insight
+  hosts: all
+  gather_facts: True
+  
+  tasks:
+    - name: Import role
+      include_role:
+        name: ans_vmware_loginsight_role

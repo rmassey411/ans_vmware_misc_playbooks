@@ -1,0 +1,9 @@
+---
+- name: Bootstrap for Operations Manager
+  hosts: all
+  gather_facts: True
+  
+  tasks:
+    - name: Bootstrap VMWare Operations Manager
+      include_role:
+        name: ans_vmware_opsmgr_role

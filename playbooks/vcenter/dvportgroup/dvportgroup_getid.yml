@@ -1,0 +1,16 @@
+---
+- name: Get dvportgroup by name
+  hosts: all
+  gather_facts: False
+  
+  tasks:
+    - name: Simple
+      ansible.builtin.include_role:
+        name: ans_vcenter_misc_role
+        tasks_from: "dvportgroup/get_id.yml"
+      vars:
+        vcenter_hostname: "{{ web_url }}"
+        vcenter_username: "{{ web_username }}"
+        vcenter_password: "{{ web_userpass }}"
+        vcenter_datacenter: "Main Campus"
+        dvportgroup_name: "10.96.16.0/22"

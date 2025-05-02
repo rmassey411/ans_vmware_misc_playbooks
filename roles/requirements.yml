@@ -1,0 +1,7 @@
+---
+ - src: git+https://github.com/rmassey411/ans_vmware_aria_role.git
+   scm: git
+ - src: git+https://github.com/rmassey411/ans_vmware_loginsight_role.git
+   scm: git
+ - src: git+https://github.com/rmassey411/ans_vmware_vcenter_role.git
+   scm: git

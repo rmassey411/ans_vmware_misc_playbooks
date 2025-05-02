@@ -1,0 +1,76 @@
+---
+- name: Netbox | vCenter VM Audit
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars:
+    # my fake dict
+    my_vms:
+      - name: "gates"
+        platform: "windows"
+      - name: "allen"
+        platform: "windows"
+      - name: "jobs"
+        platform: "mac"
+      - name: "wayne"
+        platform: "mac"
+      - name: "wozniak"
+        platform: "mac"
+      - name: "torvalds"
+        platform: "linux"
+      - name: "satellite"
+        platform: "linux"
+      - name: "AA-DB01"
+        platform: "linux"
+
+  tasks:
+    - name: Get list of virtual machines from Netbox
+      uri:
+        url: "{{ netbox_url }}/api/virtualization/virtual-machines/?limit=0"
+        validate_certs: false
+        method: GET
+        body_format: json
+        headers:
+          Content-Type: 'application/json'
+          Authorization: "Token {{ netbox_token }}"
+      register: netbox_vms
+
+    - name: Get list of virtual machines from vCenter
+      community.vmware.vmware_vm_info:
+        hostname: "{{ web_url }}"
+        password: "{{ web_userpass }}"
+        username: "{{ web_username }}"
+        validate_certs: no
+      register: vcenter_vms
+
+    # - name: Define list of missing systems
+    #   ansible.builtin.set_fact:
+    #     missing_vms: "{{ vcenter_vms.virtual_machines|map(attribute='guest_name')|list | difference(netbox_vms.json.results|map(attribute='name')|list) }}" 
+
+    # - name: Print list of missing systems
+    #   ansible.builtin.debug:
+    #     msg: "{{ missing_vms }}"
+
+
+    - name: Print missing items
+      ansible.builtin.debug:
+        msg: "{{ item }} isn't in Netbox"
+      with_items: "{{ vcenter_vms.virtual_machines|map(attribute='guest_name')|list | difference(netbox_vms.json.results|map(attribute='name')|list) }}"
+
+    # - name: Print list of fake virtual machines
+    #   ansible.builtin.debug:
+    #     msg: "{{ my_vms|map(attribute='name')|list }}"
+
+    # - name: Print list of Netbox virtual machines
+    #   ansible.builtin.debug:
+    #     msg: "{{ netbox_vms.json.results|map(attribute='name')|list }}"
+
+    # - name: Print list of vCenter virtual machines
+    #   ansible.builtin.debug:
+    #     msg: "{{ vcenter_vms.virtual_machines|map(attribute='guest_name')|list }}"
+
+    # - name: Print missing items
+    #   ansible.builtin.debug:
+    #     msg: "{{ item }} isn't in Netbox"
+    #   with_items: "{{ my_vms|map(attribute='name')|list | difference(netbox_vms.json.results|map(attribute='name')|list) }}"

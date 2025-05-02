@@ -1,0 +1,9 @@
+---
+- name: Nothing special
+  hosts: all
+  gather_facts: False
+  
+  tasks:
+    - name: Simple
+      ansible.builtin.debug:
+        msg: "Hello World!"

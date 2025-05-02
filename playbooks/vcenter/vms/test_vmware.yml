@@ -1,0 +1,15 @@
+---
+- name: Look up the VM called test_vm1 in the inventory
+  vmware.vmware_rest.vcenter_vm_info:
+    vcenter_hostname: "{{ web_url }}"
+    vcenter_password: "{{ web_userpass }}"
+    vcenter_username: "{{ web_username }}"
+    vcenter_validate_certs: no
+    # filter_names:
+    # - "{{ vm_name }}"
+  delegate_to: localhost
+  register: search_results
+
+- name: Print a search results
+  ansible.builtin.debug:
+    msg: "{{ search_results }}"
