@@ -4,9 +4,11 @@
 
 ## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Most of the playbooks within this repository have both collection and role dependencies.  You'll need to install them before trying to use these playbooks.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+```bash
+ansible-galaxy install -r requirements.yml
+```
 
 ## Add your files
 
