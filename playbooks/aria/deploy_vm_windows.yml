@@ -8,7 +8,7 @@
     vmname: "winsrv01"
     os_image: "Windows Server 2022" # Windows Server 2016, 2019 or 2022
     hardware_config: "Small"        # Small, Medium or Large
-    address: "10.10.10.10"          # Replace with IPv4 addess
+    address: "10.10.10.10"          # Replace with IPv4 address
     project_id: ""                  # Replace with your vRA project ID
     deployment_id: ""
 
