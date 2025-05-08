@@ -1,0 +1,18 @@
+---
+- name: Aria | Get Catalog Info
+  hosts: all
+  gather_facts: no
+
+  vars:
+    catalog_item: "Windows Server" # Replace with the name of your catalog item 
+
+  tasks:
+    - name: Get auth token
+      ansible.builtin.include_role:
+        name: ans_vmware_aria_role
+        tasks_from: "auth/auth_getToken.yml"
+
+    - name: Get catalog items
+      ansible.builtin.include_role:
+        name: ans_vmware_aria_role
+        tasks_from: "catalog/catalogItem_getInfo.yml"
